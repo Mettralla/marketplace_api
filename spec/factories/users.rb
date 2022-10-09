@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :user do
     email { 'one@one.org' }
-    password_digest { 'hashed_password' }
+    password_digest { BCrypt::Password.create('g00d_pa$$') }
   end
 end
