@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe "Api::V1::Users", type: :request do
-  before { @first_user = create(:user) }
+  before { @user = create(:user) }
 
   describe "GET /show" do
     it "should show a user" do
       get '/api/v1/users/1'
       expect(response).to have_http_status(:success)
       json_response = JSON.parse(response.body)
-      expect(@first_user.email).to eq(json_response['email'])
+      expect(@user.email).to eq(json_response['email'])
     end
   end
 
@@ -40,32 +40,32 @@ RSpec.describe "Api::V1::Users", type: :request do
     end
 
     it "should update user" do
-      patch '/api/v1/users/1', params: {
-        user: {
-          email: 'two@two.org',
-          password: 'trustno1'
-        }
-      }
+      patch '/api/v1/users/1',
+        params: { user: { email: 'two@two.org' } },
+        headers: { Authorization: JsonWebToken.encode(user_id: @user.id) }
+
       expect(response).to have_http_status(:success)
     end
 
-    it "should not update user when invalid params are sent" do
-      patch '/api/v1/users/1', params: {
-        user: {
-          email: 'test',
-          password: 'trustno1'
-        }
-      }
-      expect(response).to have_http_status(:unprocessable_entity)
+    it "should forbid update user" do
+      patch '/api/v1/users/1', params: { user: { email: 'two@two.org' } }
+      expect(response).to have_http_status(:forbidden)
     end
   end
 
   describe "DELETE /users/:id" do
     it 'should destroy user' do
       expect {
-        delete '/api/v1/users/1'
+        delete '/api/v1/users/1', headers: { Authorization: JsonWebToken.encode(user_id: @user.id) }
       }.to change { User.count }.from(1).to(0)
       expect(response).to have_http_status(:no_content)
+    end
+
+    it 'should forbid destroy user' do
+      expect {
+        delete '/api/v1/users/1'
+      }.not_to change { User.count }
+      expect(response).to have_http_status(:forbidden)
     end
   end
 end
