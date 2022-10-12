@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Api::V1::Users", type: :request do
   before { @user = create(:user) }
+  before { @product = create(:product, title: 'My_Product', price: 9.99, published: true, user: @user) }
 
   describe "GET /show" do
     it "should show a user" do
@@ -66,6 +67,13 @@ RSpec.describe "Api::V1::Users", type: :request do
         delete '/api/v1/users/1'
       }.not_to change { User.count }
       expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'destroy user should destroy linked product' do
+      expect {
+        delete '/api/v1/users/1', headers: { Authorization: JsonWebToken.encode(user_id: @user.id) }
+      }.to change { Product.count }.from(1).to(0)
+      expect(response).to have_http_status(:no_content)
     end
   end
 end
