@@ -1,8 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe "Api::V1::Users", type: :request do
-  before { @user = create(:user) }
-  before { @product = create(:product, title: 'My_Product', price: 9.99, published: true, user: @user) }
+  before do
+    @user = create(:user)
+    @product = create(:product, user: @user)
+  end
 
   describe "GET /show" do
     it "should show a user" do
