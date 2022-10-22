@@ -51,3 +51,5 @@ end
 gem "jwt", "~> 2.5"
 
 gem "faker", "~> 2.23"
+
+gem "fast_jsonapi", "~> 1.5"
