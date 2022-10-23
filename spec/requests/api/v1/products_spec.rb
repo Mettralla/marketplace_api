@@ -17,7 +17,7 @@ RSpec.describe "Api::V1::Products", type: :request do
       expect(response).to have_http_status(:success)
 
       json_response = JSON.parse(response.body)
-      expect(@product.title).to eq(json_response['title'])
+      expect(@product.title).to eq(json_response['data']['attributes']['title'])
     end
 
     it 'should show products' do
