@@ -18,6 +18,8 @@ RSpec.describe "Api::V1::Products", type: :request do
 
       json_response = JSON.parse(response.body)
       expect(@product.title).to eq(json_response['data']['attributes']['title'])
+      expect(@product.user.id.to_s).to eq(json_response['data']['relationships']['user']['data']['id'])
+      expect(@product.user.email).to eq(json_response['included'][0]['attributes']['email'])
     end
 
     it 'should show products' do
