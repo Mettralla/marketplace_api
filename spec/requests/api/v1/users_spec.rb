@@ -10,8 +10,11 @@ RSpec.describe "Api::V1::Users", type: :request do
     it "should show a user" do
       get '/api/v1/users/1'
       expect(response).to have_http_status(:success)
+
       json_response = JSON.parse(response.body)
       expect(@user.email).to eq(json_response['data']['attributes']['email'])
+      expect(@user.products.first.id.to_s).to eq(json_response['data']['relationships']['products']['data'][0]['id'])
+      expect(@user.products.first.title).to eq(json_response['included'][0]['attributes']['title'])
     end
   end
 
