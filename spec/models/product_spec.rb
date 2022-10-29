@@ -66,4 +66,25 @@ RSpec.describe Product, type: :model do
       expect(Product.below_or_equal_to_price(200).sort).to eq([@another_tv])
     end
   end
+
+  describe "search engine" do
+    it "search should not find 'videogame' and '100' as min price" do
+      search_hash = { keyword: 'videogame', min_price: 100 }
+      expect(Product.search(search_hash)).to be_empty
+    end
+
+    it "search should find cheap TV" do
+      search_hash = { keyword: 'tv', min_price: 50, max_price: 150 }
+      expect(Product.search(search_hash)).to eq([@another_tv])
+    end
+
+    it "search should get all product when no params" do
+      expect(Product.search({})).to eq(Product.all.to_a)
+    end
+
+    it "search should filter by product ids" do
+      search_hash = { product_ids: [@one.id] }
+      expect(Product.search(search_hash)).to eq([@one])
+    end
+  end
 end
